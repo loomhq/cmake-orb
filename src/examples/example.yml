@@ -1,0 +1,12 @@
+description: >
+  Sample usage of loomhq/cmake-orb
+
+usage:
+  version: 2.1
+  orbs:
+    cmake-orb: loomhq/cmake-orb@1.0.0
+  workflows:
+    install-on-windows:
+      jobs:
+        - cmake-orb/install:
+            os: 'windows'

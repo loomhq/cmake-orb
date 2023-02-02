@@ -1,0 +1,85 @@
+description: >
+  This command install CMake onto the host machine. It support windows, macos, and linux.
+  It will also cache the install so we won't be downloading it from Kitware all the time.
+  It is used internally by @loomhq/desktop.
+
+parameters:
+  version:
+    description: The version of CMake to install.
+    type: string
+    default: '3.25.2'
+  cache:
+    description: Whether or not to cache the installation.
+    type: boolean
+    default: true
+  cache-key:
+    description: String to use in cache key. Typically overridden when needed to bust cache.
+    type: string
+    default: 'v1'
+  os:
+    description: Operating system of the host we are installing cmake
+    type: enum
+    enum: [windows, mac, linux]
+
+steps:
+  - run:
+      name: Setup Environment Variables
+      command: |
+        echo 'export CMAKE_VERSION="<< parameters.version >>"' >> "$BASH_ENV"
+        echo 'export CMAKE_INSTALL_DIR="$HOME/cmake"' >> "$BASH_ENV"
+  - when:
+      condition:
+        equal: [<< parameters.cache >>, true]
+      steps:
+        - run:
+            name: Prep cache restore
+            command: mkdir -pv $HOME/cmake
+        - restore_cache:
+            keys:
+              - cmake-<< parameters.os >>-<< parameters.cache-key >>-<< parameters.version >>
+        - run:
+            name: List install directory
+            command: ls -lL "$HOME/cmake/bin" || true
+  - run:
+      name: Add CMake to PATH
+      command: |
+        echo 'export PATH="$HOME/cmake/bin:$PATH"' >> $BASH_ENV
+
+  - when:
+      condition:
+        equal: ['mac', << parameters.os >>]
+      steps:
+        - run:
+            name: 'Install CMake'
+            command: <<include(scripts/install-cmake-macos.sh)>>
+
+  - when:
+      condition:
+        equal: ['windows', << parameters.os >>]
+      steps:
+        - run:
+            name: 'Install CMake'
+            command: <<include(scripts/install-cmake-windows.sh)>>
+
+  - when:
+      condition:
+        equal: ['linux', << parameters.os >>]
+      steps:
+        - run:
+            name: 'Install CMake'
+            command: <<include(scripts/install-cmake-linux.sh)>>
+
+  - run:
+      name: Verify CMake Installation
+      command: |
+        ls -lL "$HOME/cmake/bin"
+        which cmake
+        cmake --version
+  - when:
+      condition:
+        equal: [<< parameters.cache >>, true]
+      steps:
+        - save_cache:
+            key: cmake-<< parameters.os >>-<< parameters.cache-key >>-<< parameters.version >>
+            paths:
+              - '~/cmake'

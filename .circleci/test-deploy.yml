@@ -1,0 +1,68 @@
+version: 2.1
+orbs:
+  cmake-orb: loomhq/cmake-orb@dev:<<pipeline.git.revision>>
+  orb-tools: circleci/orb-tools@11.5
+  win: circleci/windows@5.0.0
+  macos: circleci/macos@2.0.1
+
+filters: &filters
+  tags:
+    only: /.*/
+
+jobs:
+  # Create a job to test the commands of your orbs.
+  # You may want to add additional validation steps to ensure the commands are working as expected.
+  command-tests-linux:
+    docker:
+      - image: cimg/base:current
+    steps:
+      - checkout
+      - cmake-orb/install:
+          os: 'linux'
+  command-tests-windows:
+    executor:
+      name: win/server-2022 # executor type
+      shell: bash.exe
+      size: medium
+    steps:
+      - checkout
+      - cmake-orb/install:
+          os: 'windows'
+  command-tests-macos:
+    macos:
+      xcode: 13.3.1 # macOS 12.3.1
+    steps:
+      - checkout
+      - cmake-orb/install:
+          os: 'mac'
+
+workflows:
+  test-deploy:
+    jobs:
+      # Make sure to include "filters: *filters" in every test job you want to run as part of your deployment.
+      - command-tests-linux:
+          filters: *filters
+      - command-tests-windows:
+          filters: *filters
+      - command-tests-macos:
+          filters: *filters
+      - orb-tools/pack:
+          filters: *filters
+      - orb-tools/publish:
+          orb-name: loomhq/cmake-orb
+          vcs-type: << pipeline.project.type >>
+          pub-type: production
+          requires:
+            - orb-tools/pack
+            - command-tests-linux
+            - command-tests-windows
+            - command-tests-macos
+          context:
+            - orb-publishing
+            - github-token
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v[0-9]+\.[0-9]+\.[0-9]+$/
+# VS Code Extension Version: 1.4.0

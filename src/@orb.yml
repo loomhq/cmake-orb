@@ -1,0 +1,12 @@
+version: 2.1
+
+description: >
+  CMake Orb used by @loomhq/desktop to run CIs.
+  Easily install CMake on all the operating system's Loom deskotp is running CI on.
+  Most importantly, it will cache the cmake executable so each run do not need to
+  install CMake again and again. Save time and money.
+
+# This information will be displayed in the orb registry and is not mandatory.
+display:
+  home_url: 'https://www.loom.com/'
+  source_url: 'https://github.com/loomhq/cmake-orb'
