@@ -25,4 +25,4 @@ curl -sSL -o /tmp/cmake.zip "$url"
 tar -C "${CMAKE_INSTALL_DIR:?}" --strip-components 1 -zxf /tmp/cmake.zip
 
 # Remove unnecessary files
-rm -rf "${CMAKE_INSTALL_DIR:?}"/{doc,man,share}
+rm -rf "${CMAKE_INSTALL_DIR:?}"/{doc,man}

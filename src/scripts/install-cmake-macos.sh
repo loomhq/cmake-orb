@@ -25,7 +25,6 @@ curl -sSL -o /tmp/cmake.tar.gz "$url"
 tar -C "${CMAKE_INSTALL_DIR:?}" --strip-components 1 -zxf /tmp/cmake.tar.gz
 
 # copy binary
-cp -r "${CMAKE_INSTALL_DIR:?}/CMake.app/Contents/bin" "${CMAKE_INSTALL_DIR:?}/bin"
+ln -s "${CMAKE_INSTALL_DIR:?}/CMake.app/Contents/bin" "${CMAKE_INSTALL_DIR:?}/bin"
 
 # remove unnecessary files
-rm -rf "${CMAKE_INSTALL_DIR:?}/CMake.app"

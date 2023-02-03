@@ -15,7 +15,7 @@ parameters:
   cache-key:
     description: String to use in cache key. Typically overridden when needed to bust cache.
     type: string
-    default: 'v1'
+    default: 'v2'
   os:
     description: Operating system of the host we are installing cmake
     type: enum
@@ -37,9 +37,7 @@ steps:
         - restore_cache:
             keys:
               - cmake-<< parameters.os >>-<< parameters.cache-key >>-<< parameters.version >>
-        - run:
-            name: List install directory
-            command: ls -lL "$HOME/cmake/bin" || true
+
   - run:
       name: Add CMake to PATH
       command: |
