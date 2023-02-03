@@ -1,10 +1,5 @@
 #!/bin/bash
 
-# shellcheck disable=SC1090
-source "${BASH_ENV:?}"
-
-echo "PATH $PATH"
-
 if which cmake; then
   if cmake --version | grep "$CMAKE_VERSION"; then
     echo "CMake is already installed."
@@ -26,5 +21,3 @@ tar -C "${CMAKE_INSTALL_DIR:?}" --strip-components 1 -zxf /tmp/cmake.tar.gz
 
 # copy binary
 ln -s "${CMAKE_INSTALL_DIR:?}/CMake.app/Contents/bin" "${CMAKE_INSTALL_DIR:?}/bin"
-
-# remove unnecessary files

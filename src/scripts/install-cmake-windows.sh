@@ -1,10 +1,5 @@
 #!/bin/bash
 
-# shellcheck disable=SC1090
-source "${BASH_ENV:?}"
-
-echo "PATH $PATH"
-
 if which cmake; then
   if cmake --version | grep "$CMAKE_VERSION"; then
     echo "CMake is already installed."
